@@ -25,7 +25,7 @@ interface JWT {
 
 const clientManagementInstance = (): AxiosInstance => {
   const axiosInstance = axios.create({
-    baseURL: "https://api-task-qikearn.vercel.app/v1",
+    baseURL: "https://sugarytestapi.azurewebsites.net",
   });
 
   axiosInstance.interceptors.request.use(

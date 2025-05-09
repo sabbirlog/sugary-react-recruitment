@@ -84,9 +84,7 @@ export function DashboardHeader() {
           </Link>
         </div>
 
-        {/* Right section: Notifications and User menu */}
         <div className="flex items-center gap-2">
-          {/* User menu */}
           <div className="relative" ref={userMenuRef}>
             <button
               type="button"
@@ -121,7 +119,6 @@ export function DashboardHeader() {
               </svg>
             </button>
 
-            {/* User dropdown menu */}
             {isUserMenuOpen && (
               <div
                 className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"

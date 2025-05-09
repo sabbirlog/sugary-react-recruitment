@@ -1,8 +1,11 @@
 "use client"
 
+import useAuthCheck from "@/hooks/useAuthCheck"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeOff, LogIn } from "lucide-react"
-import { useState } from "react"
+import { signIn } from "next-auth/react"
+import { redirect } from "next/navigation"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -11,9 +14,7 @@ const loginSchema = z.object({
   email: z.string().min(1, { message: "Email is required" }).email({ message: "Must be a valid email address" }),
   password: z
     .string()
-    .min(8, { message: "Password must be at least 8 characters" })
-    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+    .min(6, { message: "Password must be at least 6 characters" })
     .regex(/[0-9]/, { message: "Password must contain at least one number" }),
 })
 
@@ -22,6 +23,8 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  const authCheck = useAuthCheck();
 
   const {
     register,
@@ -38,15 +41,22 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true)
 
-    // Simulate API call
-    console.log("Form data:", data)
-
-    // Simulate delay
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    signIn("credentials", {
+      email: data?.email,
+      password: data?.password,
+      redirect: false,
+      callbackUrl: "/",
+  });
+    // await new Promise((resolve) => setTimeout(resolve, 1500))
 
     setIsLoading(false)
-    // Here you would typically handle authentication
   }
+
+useEffect(() => {
+    if (authCheck === 'authenticated') {
+        redirect('/dashboard')
+    }
+}, [authCheck])
 
   return (
     <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
