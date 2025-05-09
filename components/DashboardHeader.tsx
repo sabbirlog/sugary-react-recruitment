@@ -1,13 +1,19 @@
 "use client"
 
+import { imageUrl } from "@/utils/imageUrl"
+import { isWindow } from "@/utils/isWindow"
+import { User } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 export function DashboardHeader() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const router = useRouter();
+  const user = isWindow && JSON.parse(localStorage.getItem('user') as string);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -37,13 +43,15 @@ export function DashboardHeader() {
   }, [])
 
   const handleLogout = () => {
-    console.log("Logging out...")
+    console.log("Logging out...");
+    localStorage.clear();
+    router.push('/')
     setIsUserMenuOpen(false)
   }
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white bg-gradient-to-r from-[var(--teal-500)] to-[var(--emerald-600)]">
-      <div className="flex h-16 items-center justify-between px-4 md:px-6 max-w-7xl mx-auto">
+      <div className="flex h-16 items-center justify-between container mx-auto">
         <div className="flex items-center gap-2 md:gap-4">
           <button
             type="button"
@@ -95,21 +103,24 @@ export function DashboardHeader() {
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             >
               <span className="sr-only">Open user menu</span>
-              <div className="relative h-8 w-8 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                <Image
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="User"
-                  width={32}
-                  height={32}
-                  className="h-full w-full object-cover"
-                />
+              <div className="relative h-8 w-8 rounded-full flex items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-700">
+                {
+                    user ? <Image
+                    src={user ? `${imageUrl}${user?.Avatar}` : ''}
+                    alt="User"
+                    width={32}
+                    height={32}
+                    className="h-full w-full object-cover"
+                  /> : <User className="h-5 w-5 text-white"/>
+                }
+                
               </div>
               <div className="hidden md:flex md:flex-col md:items-start md:leading-none">
-                <span className="text-sm font-medium dark:text-white">John Doe</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">Admin</span>
+                <span className="text-sm font-medium dark:text-white">{user?.FullName}</span>
+                <span className="text-xs text-white">Admin</span>
               </div>
               <svg
-                className="hidden md:block h-4 w-4 text-gray-500 dark:text-gray-400"
+                className="hidden md:block h-4 w-4 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
@@ -128,18 +139,21 @@ export function DashboardHeader() {
                 tabIndex={-1}
               >
                 <div className="flex items-center gap-3 px-4 py-3 border-b dark:border-gray-700">
-                  <div className="relative h-10 w-10 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                    <Image
-                      src="/placeholder.svg?height=40&width=40"
-                      alt="User"
-                      width={40}
-                      height={40}
-                      className="h-full w-full object-cover"
-                    />
+                  <div className="relative h-10 w-10 flex items-center justify-center rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                    {
+                        user ? <Image
+                        src={user ? `${imageUrl}${user?.Avatar}` : ''}
+                        alt="User"
+                        width={40}
+                        height={40}
+                        className="h-full w-full object-cover"
+                      /> : <User className="h-5 w-5 text-white"/>
+                    }
+                    
                   </div>
                   <div>
-                    <p className="text-sm font-medium dark:text-white">John Doe</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">john.doe@example.com</p>
+                    <p className="text-sm font-medium dark:text-white">{user?.FullName}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{user?.Email}</p>
                   </div>
                 </div>
                 <div className="py-1" role="none">

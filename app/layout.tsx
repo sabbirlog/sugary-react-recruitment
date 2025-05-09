@@ -1,4 +1,3 @@
-import AuthSessionProvider from "@/providers/AuthSessionProvider";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -30,7 +29,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthSessionProvider>
           <Suspense>
             <ReactQueryProvider>
               <main>
@@ -38,7 +36,6 @@ export default function RootLayout({
               </main>
             </ReactQueryProvider>
           </Suspense>
-        </AuthSessionProvider>
       </body>
     </html>
   );
