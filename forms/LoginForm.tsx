@@ -45,7 +45,6 @@ export default function LoginForm() {
       email: data?.email,
       password: data?.password,
       redirect: false,
-      callbackUrl: "/",
   });
     // await new Promise((resolve) => setTimeout(resolve, 1500))
 
