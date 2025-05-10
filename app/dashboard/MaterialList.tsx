@@ -1,18 +1,52 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { getMaterials } from "@/api/dashboard"
 import MaterialCard from "@/components/MaterialCard"
 import { Card } from "@/components/ui/card"
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
+import { useEffect, useRef } from "react"
+
+const LIMIT = 12
 
 const MaterialList = () => {
-  const { data, isLoading, error } = useQuery({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useInfiniteQuery({
     queryKey: ["material-list"],
-    queryFn: getMaterials,
+    queryFn: ({ pageParam = 0 }) =>
+      getMaterials({ Skip: pageParam, Limit: LIMIT, Types: [1] }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const totalLoaded = allPages.flatMap(p => p.Materials || []).length
+      return lastPage.Materials?.length === LIMIT ? totalLoaded : undefined
+    },
   })
 
-  // Handle loading state with skeleton cards
+  const observerRef = useRef<HTMLDivElement | null>(null)
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    if (!observerRef.current || !hasNextPage) return
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) fetchNextPage()
+      },
+      { threshold: 1 }
+    )
+
+    observer.observe(observerRef.current)
+
+    return () => observer.disconnect()
+  }, [observerRef.current, hasNextPage])
+
+  const materials = data?.pages.flatMap(page => page.Materials || []) || []
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-6">
@@ -34,20 +68,18 @@ const MaterialList = () => {
     )
   }
 
-  // Handle error state
   if (error) {
     return (
       <div className="container mx-auto py-6">
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           <p className="font-medium">Error loading materials</p>
-          <p className="text-sm">{error.message || "Please try again later"}</p>
+          <p className="text-sm">{(error).message ?? "Please try again later"}</p>
         </div>
       </div>
     )
   }
 
-  // Handle empty state
-  if (!data?.Materials || data.Materials.length === 0) {
+  if (materials.length === 0) {
     return (
       <div className="container mx-auto py-6">
         <h2 className="text-2xl font-bold mb-6">Materials</h2>
@@ -63,10 +95,20 @@ const MaterialList = () => {
     <div className="container mx-auto py-6">
       <h2 className="text-2xl font-bold mb-6">Materials</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {data?.Materials.map((material: any, index: number) => (
+        {materials.map((material, index: number) => (
           <MaterialCard key={material.Id ?? index} product={material} />
         ))}
       </div>
+
+      {hasNextPage && (
+        <div ref={observerRef} className="text-center mt-6">
+          {isFetchingNextPage ? (
+            <p className="text-gray-500">Loading more...</p>
+          ) : (
+            <p className="text-gray-400">Scroll down to load more</p>
+          )}
+        </div>
+      )}
     </div>
   )
 }
