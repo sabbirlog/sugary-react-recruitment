@@ -8,6 +8,7 @@ import { Eye, EyeOff, LogIn } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from 'react-toastify'
 import { z } from "zod"
 
 const loginSchema = z.object({
@@ -44,10 +45,17 @@ export default function LoginForm() {
         path: "/",
         sameSite: "Lax",
       })
+      Cookies.set("refreshToken", data.RefreshToken, {
+        path: "/",
+        sameSite: "Lax",
+      })
       localStorage.setItem('user', JSON.stringify(data.User));
       if(data.Success) {
         router.push('/dashboard');
       }
+      toast.success('Successfully logged in', {
+        autoClose: 5000,
+      });
     },
   });
 

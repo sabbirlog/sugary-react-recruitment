@@ -2,6 +2,8 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,16 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-          <Suspense>
-            <ReactQueryProvider>
-              <main>
-                {children}
-              </main>
-            </ReactQueryProvider>
-          </Suspense>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Suspense>
+          <ReactQueryProvider>
+            <main>
+              {children}
+            </main>
+          </ReactQueryProvider>
+        </Suspense>
+        <ToastContainer />
       </body>
     </html>
   );

@@ -5,3 +5,9 @@ export const userLogin = async (data: unknown) => {
 
     return res?.data;
 }
+
+export const refreshToken = async (data: unknown) => {
+    const res = await clientManagementInstance().post('/Account/RefreshToken', data)
+
+    return res?.data;
+}

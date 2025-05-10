@@ -46,6 +46,7 @@ export function DashboardHeader() {
   const handleLogout = () => {
     console.log("Logging out...");
     Cookies.remove("token", { path: "/" })
+    Cookies.remove("refreshToken", { path: "/" })
     router.push('/')
     setIsUserMenuOpen(false)
   }
