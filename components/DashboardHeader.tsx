@@ -2,6 +2,7 @@
 
 import { imageUrl } from "@/utils/imageUrl"
 import { isWindow } from "@/utils/isWindow"
+import Cookies from "js-cookie"
 import { User } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -44,7 +45,7 @@ export function DashboardHeader() {
 
   const handleLogout = () => {
     console.log("Logging out...");
-    localStorage.clear();
+    Cookies.remove("token", { path: "/" })
     router.push('/')
     setIsUserMenuOpen(false)
   }

@@ -3,12 +3,12 @@
 import { userLogin } from "@/api/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import Cookies from "js-cookie"
 import { Eye, EyeOff, LogIn } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
 
 const loginSchema = z.object({
   UserName: z.string().min(1, { message: "UserName is required" }),
@@ -22,7 +22,6 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
 
   const router = useRouter();
 
@@ -41,7 +40,10 @@ export default function LoginForm() {
   const mutation = useMutation({
     mutationFn: userLogin,
     onSuccess: (data) => {
-      localStorage.setItem('token', data.Token);
+      Cookies.set("token", data.Token, {
+        path: "/",
+        sameSite: "Lax",
+      })
       localStorage.setItem('user', JSON.stringify(data.User));
       if(data.Success) {
         router.push('/dashboard');
@@ -50,11 +52,7 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true)
     mutation.mutate(data)
-    // await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    setIsLoading(false)
   }
 
   return (
@@ -78,7 +76,7 @@ export default function LoginForm() {
                 errors.UserName ? "border-red-500 bg-red-50" : "border-slate-200"
               }`}
               {...register("UserName")}
-              disabled={isLoading}
+              disabled={mutation.isPending}
             />
             {errors.UserName && <p className="mt-1 text-sm text-red-500">{errors.UserName.message}</p>}
           </div>
@@ -96,7 +94,7 @@ export default function LoginForm() {
                   errors.Password ? "border-red-500 bg-red-50" : "border-slate-200"
                 }`}
                 {...register("Password")}
-                disabled={isLoading}
+                disabled={mutation.isPending}
               />
               <button
                 type="button"
@@ -117,10 +115,10 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={mutation.isPending}
             className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-[var(--teal-500)] to-[var(--emerald-600)] px-4 py-3 text-sm font-medium text-white shadow-md transition-all hover:from-[var(--teal-600)] hover:to-[var(--emerald-700)] focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] focus:ring-offset-2 disabled:opacity-70"
           >
-            {isLoading ? (
+            {mutation.isPending ? (
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : (
               <>
