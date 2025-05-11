@@ -47,6 +47,8 @@ export function DashboardHeader() {
     console.log("Logging out...");
     Cookies.remove("token", { path: "/" })
     Cookies.remove("refreshToken", { path: "/" })
+    Cookies.remove("AccessTokenExpiresAt", { path: "/" })
+    Cookies.remove("RefreshTokenExpiresAt", { path: "/" })
     router.push('/')
     setIsUserMenuOpen(false)
   }
@@ -118,7 +120,7 @@ export function DashboardHeader() {
                 
               </div>
               <div className="hidden md:flex md:flex-col md:items-start md:leading-none">
-                <span className="text-sm font-medium dark:text-white">{user?.FullName}</span>
+                <span className="text-sm font-medium text-white">{user?.FullName}</span>
                 <span className="text-xs text-white">Admin</span>
               </div>
               <svg
@@ -134,14 +136,14 @@ export function DashboardHeader() {
 
             {isUserMenuOpen && (
               <div
-                className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="user-menu-button"
                 tabIndex={-1}
               >
                 <div className="flex items-center gap-3 px-4 py-3 border-b dark:border-gray-700">
-                  <div className="relative h-10 w-10 flex items-center justify-center rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                  <div className="relative h-10 w-10 flex items-center justify-center rounded-full overflow-hidden bg-gray-100 ">
                     {
                         user ? <Image
                         src={user ? `${imageUrl}${user?.Avatar}` : ''}
@@ -154,8 +156,8 @@ export function DashboardHeader() {
                     
                   </div>
                   <div>
-                    <p className="text-sm font-medium dark:text-white">{user?.FullName}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{user?.Email}</p>
+                    <p className="text-sm font-medium text-white">{user?.FullName}</p>
+                    <p className="text-xs text-gray-400">{user?.Email}</p>
                   </div>
                 </div>
                 <div className="py-1" role="none">

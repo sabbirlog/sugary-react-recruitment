@@ -49,6 +49,14 @@ export default function LoginForm() {
         path: "/",
         sameSite: "Lax",
       })
+      Cookies.set("AccessTokenExpiresAt", data.AccessTokenExpiresAt, {
+        path: "/",
+        sameSite: "Lax",
+      })
+      Cookies.set("RefreshTokenExpiresAt", data.RefreshTokenExpiresAt, {
+        path: "/",
+        sameSite: "Lax",
+      })
       localStorage.setItem('user', JSON.stringify(data.User));
       if(data.Success) {
         router.push('/dashboard');
